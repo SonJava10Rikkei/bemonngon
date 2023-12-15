@@ -17,13 +17,13 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 # Cấu hình cho môi trường phát triển cục bộ
----
-spring:
-  profiles: local
-  datasource:
-    url: jdbc:mysql://localhost:3306/appmonngon
-    username: root
-    password: S0nSandy93
+#---
+#spring:
+#  profiles: local
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/appmonngon
+#    username: root
+#    password: S0nSandy93
 
 # Cấu hình cho môi trường máy chủ (Railway)
 ---
