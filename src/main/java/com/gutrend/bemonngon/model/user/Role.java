@@ -1,4 +1,4 @@
-package com.gutrend.bemonngon.model;
+package com.gutrend.bemonngon.model.user;
 
 import org.hibernate.annotations.NaturalId;
 

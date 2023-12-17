@@ -1,7 +1,7 @@
 package com.gutrend.bemonngon.service;
 
-import com.gutrend.bemonngon.model.Role;
-import com.gutrend.bemonngon.model.RoleName;
+import com.gutrend.bemonngon.model.user.Role;
+import com.gutrend.bemonngon.model.user.RoleName;
 
 import java.util.Optional;
 

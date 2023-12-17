@@ -1,7 +1,7 @@
 package com.gutrend.bemonngon.repository;
 
 
-import com.gutrend.bemonngon.model.User;
+import com.gutrend.bemonngon.model.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

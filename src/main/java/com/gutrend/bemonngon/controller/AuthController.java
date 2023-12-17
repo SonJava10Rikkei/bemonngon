@@ -1,20 +1,21 @@
 package com.gutrend.bemonngon.controller;
 
+import com.gutrend.bemonngon.config.Constant;
 import com.gutrend.bemonngon.dto.request.ChangeAvatar;
 import com.gutrend.bemonngon.dto.request.SignInForm;
 import com.gutrend.bemonngon.dto.request.SignUpForm;
 import com.gutrend.bemonngon.dto.request.UpdateUser;
 import com.gutrend.bemonngon.dto.response.JwtResponse;
 import com.gutrend.bemonngon.dto.response.ResponseMessage;
-import com.gutrend.bemonngon.model.Role;
-import com.gutrend.bemonngon.model.RoleName;
-import com.gutrend.bemonngon.model.User;
+import com.gutrend.bemonngon.model.user.Role;
+import com.gutrend.bemonngon.model.user.RoleName;
+import com.gutrend.bemonngon.model.user.User;
 import com.gutrend.bemonngon.security.jwt.JwtProvider;
 import com.gutrend.bemonngon.security.jwt.JwtTokenFilter;
 import com.gutrend.bemonngon.security.userprincal.UserDetailService;
 import com.gutrend.bemonngon.security.userprincal.UserPrinciple;
-import com.gutrend.bemonngon.service.impl.RoleServiceImpl;
-import com.gutrend.bemonngon.service.impl.UserServiceImpl;
+import com.gutrend.bemonngon.service.UserIMPL.RoleServiceIMPL;
+import com.gutrend.bemonngon.service.UserIMPL.UserServiceIMPL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
@@ -37,30 +40,37 @@ import java.util.Set;
 @CrossOrigin(origins = "*")
 public class AuthController {
     @Autowired
-    UserServiceImpl userService;
+    UserServiceIMPL userService;
+
     @Autowired
-    RoleServiceImpl roleService;
+    RoleServiceIMPL roleService;
+
     @Autowired
     PasswordEncoder passwordEncoder;
+
     @Autowired
     AuthenticationManager authenticationManager;
+
     @Autowired
     JwtProvider jwtProvider;
+
     @Autowired
     JwtTokenFilter jwtTokenFilter;
+
     @Autowired
     private UserDetailService userDetailService;
 
     @GetMapping("/list-user")
     public ResponseEntity<?> getListUser() {
         return new ResponseEntity<>(userService.findAll(), HttpStatus.OK);
+
     }
 
     @GetMapping("/detail-user/{id}")
     public ResponseEntity<?> detailUserById(@PathVariable Long id) {
         Optional<User> user = userService.findByUserId(id);
         if (!user.isPresent()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ResponseMessage(Constant.ID_DOSE_NOT_EXIST), HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
@@ -68,10 +78,10 @@ public class AuthController {
     @PostMapping("/signup")
     public ResponseEntity<?> register(@Valid @RequestBody SignUpForm signUpForm) {
         if (userService.existsByUsername(signUpForm.getUsername())) {
-            return new ResponseEntity<>(new ResponseMessage("no_user"), HttpStatus.OK);
+            return new ResponseEntity<>(new ResponseMessage(Constant.USERNAME_EXIST), HttpStatus.OK);
         }
         if (userService.existsByEmail(signUpForm.getEmail())) {
-            return new ResponseEntity<>(new ResponseMessage("no_email"), HttpStatus.OK);
+            return new ResponseEntity<>(new ResponseMessage(Constant.EMAIL_EXIST), HttpStatus.OK);
         }
         User user = new User(signUpForm.getName(), signUpForm.getUsername(), signUpForm.getEmail(), passwordEncoder.encode(signUpForm.getPassword()));
         Set<String> strRoles = signUpForm.getRoles();
@@ -95,7 +105,7 @@ public class AuthController {
         });
         user.setRoles(roles);
         userService.save(user);
-        return new ResponseEntity<>(new ResponseMessage("yes"), HttpStatus.OK);
+        return new ResponseEntity<>(new ResponseMessage(Constant.CREATE_SUCCESS), HttpStatus.OK);
     }
 
     @PostMapping("/signin")
@@ -107,7 +117,7 @@ public class AuthController {
         String username = jwtProvider.getUerNameFromToken(token);
         User user = userService.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("user name not fond"));
         if (user.getStatus()) {
-            return new ResponseEntity<>(new ResponseMessage("login_denied"), HttpStatus.UNAUTHORIZED);
+            return new ResponseEntity<>(new ResponseMessage(Constant.ACCOUNT_BLOCK), HttpStatus.UNAUTHORIZED);
         }
         UserPrinciple userPrinciple = (UserPrinciple) authentication.getPrincipal();
         return ResponseEntity.ok(new JwtResponse(token, userPrinciple.getName(), userPrinciple.getAvatar(), userPrinciple.getAuthorities()));
@@ -118,12 +128,27 @@ public class AuthController {
         String token = jwtTokenFilter.getJwt(request);
         String username = jwtProvider.getUerNameFromToken(token);
         User user = userService.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("Username not found"));
-        if (changeAvatar.getAvatar() == null || changeAvatar.getAvatar().trim().equals("")) {
-            return new ResponseEntity<>(new ResponseMessage("no"), HttpStatus.OK);
+
+        boolean checkNewAvatar = changeAvatar.getAvatar() == null || changeAvatar.getAvatar().trim().equals("");
+        boolean checkChangeAvatar = false;
+
+        try {
+            URL urlNew = new URL(changeAvatar.getAvatar());
+            URL urlOld = new URL(user.getAvatar());
+            if (urlNew.equals(urlOld)) {
+                checkChangeAvatar = true;
+            }
+        } catch (MalformedURLException e) {
+            return new ResponseEntity<>(new ResponseMessage(Constant.INVALID_URL_FORMAT), HttpStatus.NOT_FOUND);
+        }
+        if (checkNewAvatar) {
+            return new ResponseEntity<>(new ResponseMessage(Constant.UPDATE_FAIL), HttpStatus.OK);
+        } else if (checkChangeAvatar) {
+            return new ResponseEntity<>(new ResponseMessage(Constant.NO_CHANGE), HttpStatus.OK);
         } else {
             user.setAvatar(changeAvatar.getAvatar());
             userService.save(user);
-            return new ResponseEntity<>(new ResponseMessage("yes"), HttpStatus.OK);
+            return new ResponseEntity<>(new ResponseMessage(Constant.UPDATE_SUCCESS), HttpStatus.OK);
         }
     }
 
@@ -133,10 +158,25 @@ public class AuthController {
         String username = jwtProvider.getUerNameFromToken(token);
         User user = userService.findByUsername(username).orElseThrow(() -> new UsernameNotFoundException("User name not found"));
         if (user.getStatus()) {
-            return new ResponseEntity<>(new ResponseMessage("access_is_denied"), HttpStatus.OK);
+            return new ResponseEntity<>(new ResponseMessage(Constant.ACCESS_IS_DENIED), HttpStatus.OK);
         }
-        if (updateUser.getAvatar() == null || updateUser.getAvatar().trim().equals("")) {
+        boolean checkNewAvatar = updateUser.getAvatar() == null || updateUser.getAvatar().trim().equals("");
+        boolean checkName = updateUser.getName().equals(user.getName());
+        boolean checkPassword = passwordEncoder.matches(updateUser.getPassword(), user.getPassword());
+        boolean checkChangeAvatar = false;
+        try {
+            URL urlNew = new URL(updateUser.getAvatar());
+            URL urlOld = new URL(user.getAvatar());
+            if (urlNew.equals(urlOld)) {
+                checkChangeAvatar = true;
+            }
+        } catch (MalformedURLException e) {
+            return new ResponseEntity<>(new ResponseMessage(Constant.INVALID_URL_FORMAT), HttpStatus.NOT_FOUND);
+        }
+        if (checkNewAvatar) {
             return new ResponseEntity<>(new ResponseMessage("avatar_failed"), HttpStatus.OK);
+        } else if (checkName && checkPassword && checkChangeAvatar ) {
+            return new ResponseEntity<>(new ResponseMessage(Constant.NO_CHANGE), HttpStatus.OK);
         } else {
             user.setName(updateUser.getName());
             user.setAvatar(updateUser.getAvatar());
@@ -144,24 +184,23 @@ public class AuthController {
             userService.save(user);
             return new ResponseEntity<>(new ResponseMessage("update_success"), HttpStatus.OK);
         }
-
     }
 
     @PutMapping("/change-role/{id}")
     public ResponseEntity<?> changeRoleOfUser(@PathVariable Long id) {
         Optional<User> user = userService.findByUserId(id);
         Set<Role> roles = new HashSet<>();
-        String role = "";
+        String roleMaster = "";
         if (!user.isPresent()) {
-            return new ResponseEntity<>(new ResponseMessage("no_found"), HttpStatus.OK);
+            return new ResponseEntity<>(new ResponseMessage(Constant.ID_DOSE_NOT_EXIST), HttpStatus.OK);
         } else {
-            User user1 = userDetailService.getCurrentUser();
-            role = userService.getUserRole(user1);
-            if (!role.equals("ADMIN")) {
-                return new ResponseEntity<>(new ResponseMessage("access_denied"), HttpStatus.OK);
+            User userMaster  = userDetailService.getCurrentUser();
+            roleMaster = userService.getUserRole(userMaster);
+            if (!roleMaster.equals("ADMIN")) {
+                return new ResponseEntity<>(new ResponseMessage(Constant.ACCESS_IS_DENIED), HttpStatus.OK);
             } else {
                 if (userService.getUserRole(user.get()).equals("ADMIN")) {
-                    return new ResponseEntity<>(new ResponseMessage("can't_change_admin_role"), HttpStatus.OK);
+                    return new ResponseEntity<>(new ResponseMessage(Constant.ADMIN_ROLES_CANNOT_CHANGE), HttpStatus.OK);
                 } else {
                     if (userService.getUserRole(user.get()).equals("USER")) {
                         Role pmRole = roleService.findByName(RoleName.PM).orElseThrow(() -> new RuntimeException("Role not found"));
@@ -173,7 +212,7 @@ public class AuthController {
                     }
                     user.get().setRoles(roles);
                     userService.save(user.get());
-                    return new ResponseEntity<>(new ResponseMessage("update_success"), HttpStatus.OK);
+                    return new ResponseEntity<>(new ResponseMessage(Constant.UPDATE_SUCCESS), HttpStatus.OK);
                 }
             }
         }
@@ -182,23 +221,22 @@ public class AuthController {
     @PutMapping("/block-user/{id}")
     public ResponseEntity<?> blockUser(@PathVariable Long id) {
         Optional<User> user = userService.findByUserId(id);
-        String role = "";
+        String roleMaster = "";
         if (!user.isPresent()) {
-            return new ResponseEntity<>(new ResponseMessage("no_found"), HttpStatus.OK);
+            return new ResponseEntity<>(new ResponseMessage(Constant.ID_DOSE_NOT_EXIST), HttpStatus.OK);
         } else {
-            User user1 = userDetailService.getCurrentUser();
-            role = userService.getUserRole(user1);
-            if (!role.equals("ADMIN")) {
-                return new ResponseEntity<>(new ResponseMessage("access_is_denied"), HttpStatus.OK);
+            User userMaster = userDetailService.getCurrentUser();
+            roleMaster = userService.getUserRole(userMaster);
+            if (!roleMaster.equals("ADMIN") && !roleMaster.equals("PM")) {
+                return new ResponseEntity<>(new ResponseMessage(Constant.ACCESS_IS_DENIED), HttpStatus.OK);
             }
             if (userService.getUserRole(user.get()).equals("ADMIN")) {
-                return new ResponseEntity<>(new ResponseMessage("access_is_denied"), HttpStatus.OK);
+                return new ResponseEntity<>(new ResponseMessage(Constant.CANNOT_BLOCK_ADMIN), HttpStatus.OK);
             }
             user.get().setStatus(!user.get().getStatus());
             userService.save(user.get());
-            return new ResponseEntity<>(new ResponseMessage("update_success"), HttpStatus.OK);
+            return new ResponseEntity<>(new ResponseMessage(Constant.UPDATE_SUCCESS), HttpStatus.OK);
         }
     }
-
 
 }

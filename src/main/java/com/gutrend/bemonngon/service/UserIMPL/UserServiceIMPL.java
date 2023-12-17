@@ -1,7 +1,7 @@
-package com.gutrend.bemonngon.service.impl;
+package com.gutrend.bemonngon.service.UserIMPL;
 
-import com.gutrend.bemonngon.model.Role;
-import com.gutrend.bemonngon.model.User;
+import com.gutrend.bemonngon.model.user.Role;
+import com.gutrend.bemonngon.model.user.User;
 import com.gutrend.bemonngon.repository.IUserRepository;
 import com.gutrend.bemonngon.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class UserServiceImpl implements IUserService {
+public class UserServiceIMPL implements IUserService {
     @Autowired
     IUserRepository userRepository;
     @Override

@@ -1,6 +1,6 @@
 package com.gutrend.bemonngon.service;
 
-import com.gutrend.bemonngon.model.User;
+import com.gutrend.bemonngon.model.user.User;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package com.gutrend.bemonngon.model;
+package com.gutrend.bemonngon.model.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.hibernate.annotations.NaturalId;
@@ -11,7 +11,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "users", uniqueConstraints = {
+@Table(name = "users",
+        uniqueConstraints = {
         @UniqueConstraint(columnNames = {
                 "username"
         }),
@@ -46,7 +47,6 @@ public class User {
     @JoinTable(name = "user_role",
             joinColumns = @JoinColumn(name = "user_id"),inverseJoinColumns = @JoinColumn(name = "role_id"))
     Set<Role> roles = new HashSet<>();
-
 
     public User() {
     }

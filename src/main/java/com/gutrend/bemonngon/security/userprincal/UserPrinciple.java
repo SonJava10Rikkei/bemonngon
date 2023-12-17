@@ -1,6 +1,6 @@
 package com.gutrend.bemonngon.security.userprincal;
 
-import com.gutrend.bemonngon.model.User;
+import com.gutrend.bemonngon.model.user.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

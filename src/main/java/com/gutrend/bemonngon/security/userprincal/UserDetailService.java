@@ -1,8 +1,8 @@
 package com.gutrend.bemonngon.security.userprincal;
 
-import com.gutrend.bemonngon.model.User;
+import com.gutrend.bemonngon.model.user.User;
 import com.gutrend.bemonngon.repository.IUserRepository;
-import com.gutrend.bemonngon.service.impl.UserServiceImpl;
+import com.gutrend.bemonngon.service.UserIMPL.UserServiceIMPL;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,7 +18,7 @@ public class UserDetailService implements UserDetailsService {
     @Autowired
     IUserRepository userRepository;
     @Autowired
-    UserServiceImpl userService;
+    UserServiceIMPL userService;
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -29,9 +29,9 @@ public class UserDetailService implements UserDetailsService {
     public User getCurrentUser(){
         Optional<User> user;
         String userName;
-        //Lay 1 object principal trong SecurityContexHolder
+        //Lay 1 object principal trong Security Context Holder
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        //So sanh obj voi Userdetails neu ma dung thi gan userName = principal.getUsername();
+        //So sanh obj voi User details neu ma dung thi gan userName = principal.getUsername();
         if(principal instanceof UserDetails){
             userName = ((UserDetails) principal).getUsername();
         } else {
