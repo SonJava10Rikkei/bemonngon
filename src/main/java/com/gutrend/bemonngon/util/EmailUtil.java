@@ -30,7 +30,7 @@ public class EmailUtil {
                           <h2>Mã OTP Món ngon mỗi ngày của bạn là: </h2>
                           <h3 style="color: red;">%s</h3>
                           <h4 style="color: green;">Mã trên có hiệu lực trong vòng 1 phút</h4>
-                          <a href="http://%s/verify-account?email=%s&otp=%s" target="_blank">Click link to verify</a>
+                          <a href="%s/verify-account?email=%s&otp=%s" target="_blank">Click link to verify</a>
                         </div>
                         """, image, otp,link, email, otp),
                 true
@@ -53,7 +53,7 @@ public class EmailUtil {
                           <h2>Mã OTP Món ngon mỗi ngày của bạn là: </h2>
                           <h3 style="color: red;">%s</h3>
                           <h4 style="color: green;">Mã trên có hiệu lực trong vòng 1 phút</h4>
-                          <a href="http://%s/change-password?email=%s&otp=%s" target="_blank">Click link to set password</a>
+                          <a href="%s/change-password?email=%s&otp=%s" target="_blank">Click link to set password</a>
                         </div>
                         """, image, otp,link, email, otp),
                 true

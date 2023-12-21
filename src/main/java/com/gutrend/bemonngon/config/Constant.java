@@ -1,8 +1,8 @@
 package com.gutrend.bemonngon.config;
 
 public class Constant {
-//    public static final String Link = "localhost:8080";
-    public static final String Link = "monngon.up.railway.app";
+//    public static final String Link = "http://localhost:8080";
+    public static final String Link = "https://monngon.up.railway.app";
 
 
 
