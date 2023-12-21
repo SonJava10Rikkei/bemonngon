@@ -14,25 +14,31 @@ import java.util.Optional;
 @Service
 public class UserServiceIMPL implements IUserService {
     @Autowired
-    IUserRepository userRepository;
+    IUserRepository iUserRepository;
+
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return iUserRepository.findByEmail(email);
+    }
+
     @Override
     public Optional<User> findByUsername(String name) {
-        return userRepository.findByUsername(name);
+        return iUserRepository.findByUsername(name);
     }
 
     @Override
     public Boolean existsByUsername(String username) {
-        return userRepository.existsByUsername(username);
+        return iUserRepository.existsByUsername(username);
     }
 
     @Override
     public Boolean existsByEmail(String email) {
-        return userRepository.existsByEmail(email);
+        return iUserRepository.existsByEmail(email);
     }
 
     @Override
     public User save(User user) {
-        return userRepository.save(user);
+        return iUserRepository.save(user);
     }
 
     @Override
@@ -56,11 +62,12 @@ public class UserServiceIMPL implements IUserService {
 
     @Override
     public Optional<User> findByUserId(Long id) {
-        return userRepository.findById(id);
+        return iUserRepository.findById(id);
     }
 
     @Override
     public List<User> findAll() {
-        return userRepository.findAll();
+        return iUserRepository.findAll();
     }
+
 }

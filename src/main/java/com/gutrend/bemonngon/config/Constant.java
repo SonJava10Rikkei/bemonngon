@@ -1,12 +1,33 @@
 package com.gutrend.bemonngon.config;
 
 public class Constant {
+//    public static final String Link = "localhost:8080";
+    public static final String Link = "monngon.up.railway.app";
 
+
+
+    public static final String REGENERATE_OTP = "Please regenerate otp and try again ...";
+    public static final String CHECK_YOUR_EMAIL = "Please CHECK YOUR EMAIL to set password to your account ...";
+    public static final String EMAIL_DOES_NOT_EXIST = "Fail. EMAIL_DOES_NOT_EXIST !!!";
+
+    public static final String PASSWORD_SET_SUCCESSFULY = "New password set successfully login with new password ...!";
+    public static final String OTP_VERIFICATION_SUCCESSFUL = "OTP_VERIFICATION_SUCCESSFUL !!! ";
+    public static final String OTP_SENT_SUCCESS = "OTP code has been sent to your email ... please verify account within 1 minute !";
+    public static final String TOKEN_NOT_EXIST = "Fail. TOKEN_NOT_EXIST !!!";
+    public static final String TOKEN_EXPIRED = "Fail. TOKEN_EXPIRED !!!";
+    public static final String INVALID_PASSWORD = "Fail. INVALID_PASSWORD !!!";
+    public static final String INVALID_CREDENTIALS = "Fail. INVALID_CREDENTIALS !!!";
     public static final String ACCESS_IS_DENIED = "Fail. Access is denied !!!";
+    public static final String USERNAME_CANNOT_BLANK = "Fail. Username cannot be blank !!!";
+    public static final String PASSWORD_CANNOT_BLANK = "Fail. Password cannot be blank !!!";
     public static final String ADMIN_ROLES_CANNOT_CHANGE = "Fail. Admin roles cannot be changed !!!";
     public static final String CANNOT_BLOCK_ADMIN = "Fail. Cannot block admin !!!";
     public static final String CREATE_SUCCESS = "Create Success !";
+    public static final String SIGNOUT_SUCCESS = "Signout Success !";
+    public static final String SIGNOUT_FAILURE = "Signout Failed !!!";
+    public static final String INVALID_TOKEN = "Fail. Invalid token !!!";
     public static final String ID_DOSE_NOT_EXIST = "Fail. Id does not exist !!!";
+    public static final String EMAIL_DOSE_NOT_EXIST = "Fail. Email does not exist !!!";
     public static final String NO_CHANGE = "Infomaytion No Change ?";
     public static final String INVALID_URL_FORMAT = "Fail. Invalid URL format !!!";
     public static final String NAME_EXIST = "Fail. Name existed !!!";
@@ -19,6 +40,7 @@ public class Constant {
 
     public static final String EMAIL_EXIST = "Fail. Email existed !!!";
 
+    public static final String ACCOUNT_N0T_VERIFIED = "your account is not verified !!!";
     public static final String ACCOUNT_BLOCK = "Account has been blocked. You cannot access any resources!!!";
 
 
